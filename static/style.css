@@ -27,7 +27,7 @@ nav button {
 	color: #222;
 	border: none;
 	padding: 12px 28px;
-	border-radius: 8px;
+	border-radius: 16px;
 	font-size: 1.08rem;
 	cursor: pointer;
 	margin: 0 12px;
@@ -62,7 +62,7 @@ input, textarea, select, button[type="submit"] {
 	margin-bottom: 16px;
 	padding: 8px;
 	border: 1px solid #e5e7eb;
-	border-radius: 6px;
+	border-radius: 14px;
 	font-size: 1rem;
 	background: #f6f7f9;
 	box-sizing: border-box;
@@ -77,6 +77,7 @@ button[type="submit"] {
 	color: #fff;
 	border: none;
 	cursor: pointer;
+	border-radius: 16px;
 	transition: background 0.2s;
 }
 button[type="submit"]:hover {
@@ -96,7 +97,7 @@ button[type="submit"]:hover {
 	background: #e5e7eb;
 	border: none;
 	padding: 8px 16px;
-	border-radius: 6px;
+	border-radius: 14px;
 	font-size: 1rem;
 	cursor: pointer;
 	margin-right: 8px;
