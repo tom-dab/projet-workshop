@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
 <title>Chat LAN</title>
+<!-- Socket.IO client -->
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <style>
   body {
     font-family: Arial, sans-serif;
@@ -136,7 +138,7 @@ if (!clientId) {
 
 // ⚠️ IP de ton serveur
 const SERVER_URL = "http://127.0.0.1:5000/";
-const ws = new WebSocket("ws://127.0.0.1:5000/ws");
+const socket = io(SERVER_URL, { transports: ["websocket"] });
 
 // Fonction pour afficher un message
 function appendMessage(sender, text, isFile=false) {
@@ -272,7 +274,7 @@ document.getElementById("recordBtn").addEventListener("click", async () => {
                 for (const filename of data.filenames) {
                     const fileUrl = `${SERVER_URL}/files/` + filename;
                     appendMessage("Moi", fileUrl, true);
-                    ws.send(JSON.stringify({ clientId: clientId, text: fileUrl, isFile: true }));
+                    socket.emit("message", JSON.stringify({ clientId: clientId, text: fileUrl, isFile: true }));
                 }
             };
 
@@ -317,11 +319,11 @@ function saveMessageHistory() {
 
 // Envoi message texte
 function sendMessage(keepText = false) {
-    const text = input.value.trim();
-    if (!text) return;
+    const text = input.value;
+    if (!text.trim()) return;
 
     appendMessage("Moi", text);
-    ws.send(JSON.stringify({ clientId: clientId, text: text }));
+    socket.emit("message", JSON.stringify({ clientId: clientId, text: text }));
 
     messageHistory.unshift(text); // ← Ajout du message ici !
     // ✅ On stocke le message dans l’historique (max 5)
@@ -346,7 +348,7 @@ input.addEventListener("keydown", function(event) {
         } else if (event.ctrlKey) {
             // Ctrl+Enter → envoyer mais garder le texte
             event.preventDefault();
-            sendMessage(true);
+            sendMessage(keepText=true);
         } else {
             // Enter seul → envoyer et vider le champ
             event.preventDefault();
@@ -402,7 +404,7 @@ input.addEventListener("paste", async (event) => {
                 for (const filename of data.filenames) {
                     const fileUrl = `${SERVER_URL}/files/${filename}`;
                     appendMessage("Moi", fileUrl, true);
-                    ws.send(JSON.stringify({ clientId: clientId, text: fileUrl, isFile: true }));
+                    socket.emit("message", JSON.stringify({ clientId: clientId, text: fileUrl, isFile: true }));
                 }
             } catch (err) {
                 console.error("Erreur upload GIF :", err);
@@ -414,7 +416,9 @@ input.addEventListener("paste", async (event) => {
 });
 
 // Bouton envoyer
-document.getElementById("sendBtn").addEventListener("click", sendMessage);
+document.getElementById("sendBtn").addEventListener("click", function() {
+    sendMessage(false);
+});
 
 // Upload fichiers
 async function uploadFile() {
@@ -433,24 +437,28 @@ async function uploadFile() {
     });
     const data = await res.json();
 
-    // Envoie un message WebSocket pour chaque fichier
+    // Envoie un message Socket.IO pour chaque fichier
     for (const filename of data.filenames) {
         const fileUrl = `${SERVER_URL}/files/` + filename;
         appendMessage("Moi", fileUrl, true);
-        ws.send(JSON.stringify({ clientId: clientId, text: fileUrl, isFile: true }));
+        socket.emit("message", JSON.stringify({ clientId: clientId, text: fileUrl, isFile: true }));
     }
     // Réinitialise l'input
     fileInput.value = "";
 }
 document.getElementById("fileBtn").addEventListener("click", uploadFile);
 
-// Messages WebSocket
-ws.onmessage = (event) => {
-    const data = JSON.parse(event.data);
+// Réception des messages Socket.IO
+socket.on("message", (data) => {
+    // data peut être un objet ou une string JSON
+    if (typeof data === "string") {
+        try {
+            data = JSON.parse(data);
+        } catch {}
+    }
     if (data.clientId === clientId) return;
-
     appendMessage("Autre", data.text, data.isFile);
-};
+});
 </script>
 
 </body>
