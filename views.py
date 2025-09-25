@@ -22,7 +22,6 @@ def register():
 def chat():
     return render_template('chat.html')
 
-
 @views.route('/admin')
 def admin():
     return render_template('admin.html')
