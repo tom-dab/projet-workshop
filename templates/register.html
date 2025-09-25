@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription</title>
+</head>
+<body>
+    <nav>
+        <table style="width:100%; border-collapse:collapse;">
+            <tr>
+                <td style="text-align:left;">
+                    <a href="{{ url_for('views.home') }}"><button>Accueil</button></a>
+                </td>
+                <td style="text-align:right;">
+                    <a href="{{ url_for('views.login') }}"><button>Connexion</button></a>
+                </td>
+            </tr>
+        </table>
+    </nav>
+    <h1>Inscription</h1>
+    <form enctype="multipart/form-data">
+    <label for="nom">Nom :</label><br>
+    <input type="text" id="nom" name="nom"><br><br>
+    <label for="prenom">Prénom :</label><br>
+    <input type="text" id="prenom" name="prenom"><br><br>
+    <label for="date_naissance">Date de naissance :</label><br>
+    <input type="date" id="date_naissance" name="date_naissance"><br><br>
+    <label for="filiere">Filière :</label><br>
+    <input type="text" id="filiere" name="filiere"><br><br>
+    <label for="justificatif">Justificatif :</label><br>
+    <input type="file" id="justificatif" name="justificatif"><br><br>
+    <button type="submit">S'inscrire</button>
+    </form>
+</body>
+</html>
